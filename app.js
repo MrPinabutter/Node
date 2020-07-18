@@ -7,7 +7,7 @@
     const path = require('path');
     const mongoose = require('mongoose');
     const session = require('express-session');
-    const flash = require('connect-flash').
+    const flash = require('connect-flash');
 
 // Configurações
     // Sessão 
@@ -15,15 +15,15 @@
             secret: "r2d2",
             resave: true,
             saveUninitialized:true
-        }));
-        app.use(flash());
+        }))
+        app.use(flash())
 
     // Middleware
         app.use((req, res, next) => {
             // Variável global
-            res.locals.success_msg = req.flash("success_msg");
-            res.locals.error_msg = req.flash("error_msg");
-            next(); 
+            res.locals.success_msg = req.flash("success_msg")
+            res.locals.error_msg = req.flash("error_msg")
+            next()
         })
 
     // BodyParser
