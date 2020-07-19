@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require('express')
 const mongoose = require('mongoose')
-const router = express.Router();
+const router = express.Router()
 require("../models/Categoria")
 const Categoria = mongoose.model("categorias")
 
@@ -14,7 +14,13 @@ router.get('/posts', (req, res) => {
 })
 
 router.get("/categorias", (req, res) => {
-    res.render("admin/categorias")
+    Categoria.find().then((categorias) => {
+        res.render("admin/categorias", {categorias: categorias.map(category => category.toJSON())})
+    }).catch((err) => {
+        req.flash("error_msg", "Houve um erro ao listar")
+        res.redirect("/admin")
+    })
+    
 })
 
 router.post("/categorias/nova", (req, res) => {
