@@ -90,7 +90,7 @@ router.post("/categorias/edit", (req, res) => {
         erros.push({texto:"Nome da categoria muito curto"})
     }
     
-    if(erros.length > 0){
+    if(erros.length > 0){      
         Categoria.findOne({_id:req.body.id}).then((categoria) => {
             res.render("admin/editcategorias", {categoria:categoria.toJSON(), erros:erros})
         }).catch(err => {
@@ -116,6 +116,16 @@ router.post("/categorias/edit", (req, res) => {
             res.redirect("/admin/categorias")
         })
     }
+})
+
+router.post("/categorias/deletar", (req, res) => {
+    Categoria.remove({_id:req.body.id}).then(() => {
+        req.flash("success_msg", "Categoria deletada com sucesso!")
+        res.redirect("/admin/categorias")
+    }).catch(err => {
+        req.flash("error_msg", "Houve um erro ao deletar categoria, tente novamente!")
+        res.redirect("/admin/categorias")
+    })
 })
 
 module.exports = router
