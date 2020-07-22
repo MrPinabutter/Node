@@ -271,5 +271,11 @@ router.post("/postagens/edit", (req, res) => {
 
 })
 
+router.get("/postagens/deletar/:id", (req, res) => {
+    Postagem.deleteOne({_id:req.params.id}).then(() => {
+        res.redirect("/admin/postagens")
+    })
+})
+
 
 module.exports = router
