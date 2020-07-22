@@ -11,10 +11,6 @@ router.get('/', (req, res) => {
     res.send("Pagina Principal")
 })
 
-router.get('/posts', (req, res) => {
-    res.send("Pagina de Posts")
-})
-
 router.get("/categorias", (req, res) => {
     Categoria.find().sort({date:'desc'}).then((categorias) => {
         res.render("admin/categorias", {categorias: categorias.map(category => category.toJSON())})
@@ -197,7 +193,83 @@ router.post("/postagens/nova", (req, res) => {
             req.flash("error_msg", "Erro ao criar uma postagem, tente novamente!" + err)
             res.redirect("/admin/postagens")
         })
-
     }
 })
+
+router.get("/postagens/edit/:id", (req, res) => {
+
+    Postagem.findOne({_id:req.params.id}).then((postagem) => {      // Encontrando postagens e categorias de forma aninhada
+
+        Categoria.find().then(categorias => {
+            res.render("admin/editpostagens", {categorias: categorias.map(categoria => categoria.toJSON()), postagem: postagem.toJSON()})
+
+        }).catch(err => {
+            req.flash("error_msg", "Houve um erro ao listar categorias")
+            res.redirect("/admin/postagens")
+        })
+
+    }).catch(err => {
+        req.flash("error_msg", "Houve um erro ao carregar o formulario de edição")
+        res.redirect("/admin/postagens")
+    })
+
+})
+
+router.post("/postagens/edit", (req, res) => {
+    
+    erros = []
+
+    if(!req.body.titulo || typeof req.body.titulo == undefined || req.body.titulo == null){
+        erros.push({texto: "Titulo inválido"})
+    }
+    
+    if(!req.body.slug || typeof req.body.slug == undefined || req.body.slug == null){
+        erros.push({texto: "Slug inválido"})
+    }
+    
+    if(!req.body.descricao || typeof req.body.descricao == undefined || req.body.descricao == null){
+        erros.push({texto: "Descrição inválida"})
+    }
+
+    if(!req.body.conteudo || typeof req.body.conteudo == undefined || req.body.conteudo == null){
+        erros.push({texto: "Conteúdo inválido"})
+    }
+    
+    if(req.body.titulo.length < 2){
+        erros.push({texto:"Titulo muito curto"})
+    }
+
+    if(req.body.categoria == 0){
+        erros.push("Categoria inválida, registre uma categoria")
+    }
+
+    if(erros.length > 0){
+        res.render("admin/editpostagem", {erros: erros})
+    }else{
+
+        Postagem.findOne({_id: req.body.id})
+        .then(postagem => {
+            postagem.titulo = req.body.titulo,
+            postagem.slug = req.body.slug,
+            postagem.descricao = req.body.descricao,
+            postagem.conteudo = req.body.conteudo,
+            postagem.categoria = req.body.categoria
+
+            postagem.save().then(() => {
+                req.flash("success_msg", "Postagem salva com sucesso!")
+                res.redirect("/admin/postagens")
+            }).catch(err => {
+                req.flash("error_msg", "Erro interno")
+                res.redirect("/admin/postagens")
+            })
+        })
+        .catch(err => {
+            req.flash("error_msg", "Houve um erro ao salvar edição de postagem")
+            res.redirect("/admin/postagens")
+        })
+    }
+
+})
+
+
 module.exports = router
