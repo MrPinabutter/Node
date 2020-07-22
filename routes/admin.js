@@ -131,7 +131,12 @@ router.post("/categorias/deletar", (req, res) => {
 })
 
 router.get("/postagens", (req, res) => {
-    res.render("admin/postagens")
+    Postagem.find().populate("categoria").sort({date: "desc"}).then((postagens) => {
+        res.render("admin/postagens", {postagens: postagens.map(postagem => postagem.toJSON())})
+    }).catch(err => {
+        req.flash("error_msg", "Houve um erro ao listar postagens")
+        res.redirect("/admin")
+    })
 })
 
 router.get("/postagens/add", (req, res) => {
@@ -143,9 +148,29 @@ router.get("/postagens/add", (req, res) => {
     })
 })
 
-
 router.post("/postagens/nova", (req, res) => {
+    
     var erros = []
+
+    if(!req.body.titulo || typeof req.body.titulo == undefined || req.body.titulo == null){
+        erros.push({texto: "Titulo inválido"})
+    }
+    
+    if(!req.body.slug || typeof req.body.slug == undefined || req.body.slug == null){
+        erros.push({texto: "Slug inválido"})
+    }
+    
+    if(!req.body.descricao || typeof req.body.descricao == undefined || req.body.descricao == null){
+        erros.push({texto: "Descrição inválida"})
+    }
+
+    if(!req.body.conteudo || typeof req.body.conteudo == undefined || req.body.conteudo == null){
+        erros.push({texto: "Conteúdo inválido"})
+    }
+    
+    if(req.body.titulo.length < 2){
+        erros.push({texto:"Titulo muito curto"})
+    }
 
     if(req.body.categoria == 0){
         erros.push("Categoria inválida, registre uma categoria")
@@ -157,15 +182,10 @@ router.post("/postagens/nova", (req, res) => {
         const novaPostagem = {
             titulo: req.body.titulo,
             slug: req.body.slug,
-            descrição: req.body.descricao,
+            descricao: req.body.descricao,
             conteudo: req.body.conteudo,
             categoria: req.body.categoria
         }
-        console.log(novaPostagem.titilo);
-        console.log(novaPostagem.slug);
-        console.log(novaPostagem.descrição);
-        console.log(novaPostagem.conteudo);
-        console.log(novaPostagem.categoria);
 
         new Postagem(novaPostagem)
         .save()
