@@ -92,7 +92,7 @@
         Categoria.findOne({slug: req.params.slug}).then(categoria => {
             if(categoria){
                 Postagem.find({categoria: categoria._id}).then((postagens) => {
-                    res.render("categorias/postagens", {postagens: postagens.map((postagem) => postagem.toJSON()), categoria: categoria})
+                    res.render("categorias/postagens", {postagens: postagens.map((postagem) => postagem.toJSON()), categoria: categoria.toJSON()})
                 }).catch(err => {
                     req.flash("erros_msg", "Houve um erro ao listar os posts")
                     res.redirect("/")
