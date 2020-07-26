@@ -6,7 +6,6 @@ const Usuario = new Schema({
         type:String,
         required: true
     },
-    
     email:{
         type:String,
         required: true
@@ -14,6 +13,10 @@ const Usuario = new Schema({
     senha:{
         type: String, 
         required: true
+    },
+    eAdmin:{
+        type: Number, 
+        default: 0
     }
 })
 
