@@ -1,6 +1,6 @@
 # Node JS
 ## Pequeno web-site express utilizando diversas funcionalidades back-end 
-    Nesse repositório foi praticado o uso de: <br>
+<blockquote>Nesse repositório foi praticado o uso de:</blockquote> <br>
 <li>Express</li>
 <li>Express-session</li>
 <li>Connection Flash</li>
